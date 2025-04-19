@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/swansea-degree-calculator/static/css/main.53c277f1.css",
-    "main.js": "/swansea-degree-calculator/static/js/main.dcfa8392.js",
+    "main.js": "/swansea-degree-calculator/static/js/main.0a7a93d1.js",
     "index.html": "/swansea-degree-calculator/index.html",
     "main.53c277f1.css.map": "/swansea-degree-calculator/static/css/main.53c277f1.css.map",
-    "main.dcfa8392.js.map": "/swansea-degree-calculator/static/js/main.dcfa8392.js.map"
+    "main.0a7a93d1.js.map": "/swansea-degree-calculator/static/js/main.0a7a93d1.js.map"
   },
   "entrypoints": [
     "static/css/main.53c277f1.css",
-    "static/js/main.dcfa8392.js"
+    "static/js/main.0a7a93d1.js"
   ]
 }
