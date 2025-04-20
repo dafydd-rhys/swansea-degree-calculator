@@ -1,28 +1,5 @@
-// calculations.js
 export const calculateUndergraduate = (y2, y3) => {
-  const splitY2 = split(y2);
-  const splitY3 = split(y3);
-
-  // Now call totalCreditVal with the split arrays to calculate results
-  return totalCreditVal(splitY3, splitY2);
-};
-
-const split = (yearData) => {
-  let splitModules = [];
-
-  yearData.forEach((module) => {
-    const creditChunks = module.credits / 15;
-
-    if (creditChunks >= 1 && module.credits % 15 === 0) {
-      for (let i = 0; i < creditChunks; i++) {
-        splitModules.push({ grade: module.grade });
-      }
-    } else {
-      splitModules.push(module);
-    }
-  });
-
-  return splitModules;
+  return totalCreditVal(y3, y2);
 };
 
 const totalCreditVal = (lvl7, lvl6) => {
@@ -33,69 +10,144 @@ const totalCreditVal = (lvl7, lvl6) => {
   let bandC = [];
   let bandD = [];
 
-  // LEVEL 7 (Y3)
+  // LEVEL 7 (Y3) - Gather modules and their credit values
   lvl7.forEach((module) => {
-    credits7.push(creditValue(module.grade)); // Calculate credit value based on grade
+    credits7.push({ grade: module.grade, credits: module.credits });
   });
 
-  credits7.sort((a, b) => b - a);
+  // Sort by grade (highest first)
+  credits7.sort((a, b) => b.grade - a.grade);
 
-  // Get BAND A (Top 80 @ Level 7)
-  for (let i = 0; i < 5; i++) {
-    bandA.push(credits7[i]);
+  // Get BAND A (Top 80 credits @ Level 7)
+  let totalCreditsBandA = 0;
+  let bandAcreditTotal = 0;
+  let remainingCredits7 = [];
+
+  for (let i = 0; i < credits7.length; i++) {
+    if (totalCreditsBandA < 80) {
+      if (totalCreditsBandA + credits7[i].credits > 80) {
+        const remainingCredits = 80 - totalCreditsBandA;
+        bandA.push({
+          grade: credits7[i].grade,
+          credits: remainingCredits,
+        });
+        bandAcreditTotal += credits7[i].grade * remainingCredits;
+        totalCreditsBandA += remainingCredits;
+
+        // Add remaining credits to remainingCredits7
+        const remainingModule = {
+          grade: credits7[i].grade,
+          credits: credits7[i].credits - remainingCredits,
+        };
+        remainingCredits7.push(remainingModule);
+      } else {
+        bandA.push(credits7[i]);
+        totalCreditsBandA += credits7[i].credits;
+        bandAcreditTotal += credits7[i].grade * credits7[i].credits;
+      }
+    } else {
+      remainingCredits7.push(credits7[i]);  // Store remaining credits for Band B
+    }
   }
-  bandA.push((credits7[5] / 15) * 5);
 
-  // Get BAND B (Remaining 40 @ Level 7)
-  for (let i = 6; i < 8; i++) {
-    bandB.push(credits7[i]);
+  // Get BAND B (Next 40 credits @ Level 7, remaining modules after Band A)
+  let totalCreditsBandB = 0;
+  let bandBcreditTotal = 0;
+
+  for (let i = 0; i < remainingCredits7.length; i++) {
+    if (totalCreditsBandB < 40) {
+      const remainingCredits = Math.min(40 - totalCreditsBandB, remainingCredits7[i].credits);
+      bandB.push({
+        grade: remainingCredits7[i].grade,
+        credits: remainingCredits,
+      });
+      bandBcreditTotal += remainingCredits7[i].grade * remainingCredits;
+      totalCreditsBandB += remainingCredits;
+    }
   }
-  bandB.push((credits7[5] / 15) * 10);
 
-  // LEVEL 6 (Y2)
+  // LEVEL 6 (Y2) - Gather modules and their credit values
   lvl6.forEach((module) => {
-    credits6.push(creditValue(module.grade));
+    credits6.push({ grade: module.grade, credits: module.credits });
   });
 
-  credits6.sort((a, b) => b - a);
+  // Sort by grade (highest first)
+  credits6.sort((a, b) => b.grade - a.grade);
 
-  // Get BAND C (Top 40 @ Level 6)
-  for (let i = 0; i < 2; i++) {
-    bandC.push(credits6[i]);
+  // Get BAND C (Top 40 credits @ Level 6)
+  let totalCreditsBandC = 0;
+  let bandCcreditTotal = 0;
+  let remainingCredits6 = [];
+
+  for (let i = 0; i < credits6.length; i++) {
+    if (totalCreditsBandC < 40) {
+      if (totalCreditsBandC + credits6[i].credits > 40) {
+        const remainingCredits = 40 - totalCreditsBandC;
+        bandC.push({
+          grade: credits6[i].grade,
+          credits: remainingCredits,
+        });
+        bandCcreditTotal += credits6[i].grade * remainingCredits;
+        totalCreditsBandC += remainingCredits;
+
+        // Add remaining credits to remainingCredits6
+        const remainingModule = {
+          grade: credits6[i].grade,
+          credits: credits6[i].credits - remainingCredits,
+        };
+        remainingCredits6.push(remainingModule);
+      } else {
+        bandC.push(credits6[i]);
+        totalCreditsBandC += credits6[i].credits;
+        bandCcreditTotal += credits6[i].grade * credits6[i].credits;
+      }
+    } else {
+      remainingCredits6.push(credits6[i]);  // Store remaining credits for Band D
+    }
   }
-  bandC.push((credits6[2] / 15) * 10);
 
-  // Get BAND D (Remaining 40 @ Level 6)
-  for (let i = 3; i < 8; i++) {
-    bandD.push(credits6[i]);
+  // Get BAND D (Remaining credits @ Level 6, up to 80 credits)
+  let totalCreditsBandD = 0;
+  let bandDcreditTotal = 0;
+
+  for (let i = 0; i < remainingCredits6.length; i++) {
+    if (totalCreditsBandD < 80) {
+      const remainingCredits = Math.min(80 - totalCreditsBandD, remainingCredits6[i].credits);
+      bandD.push({
+        grade: remainingCredits6[i].grade,
+        credits: remainingCredits,
+      });
+      bandDcreditTotal += remainingCredits6[i].grade * remainingCredits;
+      totalCreditsBandD += remainingCredits;
+    }
   }
-  bandD.push((credits6[2] / 15) * 5);
 
-  // Calculate and set final band values
+  // Calculate weighted averages for each band
   const bandResults = {
-    bandA: bandCalculate(bandA, 50, 80),
-    bandB: bandCalculate(bandB, 16.67, 40),
-    bandC: bandCalculate(bandC, 16.66, 40),
-    bandD: bandCalculate(bandD, 16.67, 80),
+    bandA: (bandAcreditTotal / totalCreditsBandA) * 50 / 100, // Top 80 @ Level 7
+    bandB: (bandBcreditTotal / totalCreditsBandB) * 16.67 / 100, // Remaining 40 @ Level 7
+    bandC: (bandCcreditTotal / totalCreditsBandC) * 16.66 / 100, // Top 40 @ Level 6
+    bandD: (bandDcreditTotal / totalCreditsBandD) * 16.67 / 100, // Remaining 80 @ Level 6
   };
 
-  const final =
-    Math.round(
-      (bandResults.bandA +
-        bandResults.bandB +
-        bandResults.bandC +
-        bandResults.bandD) *
-        1000
-    ) / 1000;
+  // Calculate final weighted average
+  const final = Math.round(
+    (bandResults.bandA + bandResults.bandB + bandResults.bandC + bandResults.bandD) * 100
+  ) / 100;
+
+  // Calculate year averages for Y2 and Y3
   const y2Avg =
     Math.round(
-      (lvl6.reduce((sum, module) => sum + module.grade, 0) / lvl6.length) * 1000
-    ) / 1000;
+      (lvl6.reduce((sum, module) => sum + module.grade * module.credits, 0) /
+        lvl6.reduce((sum, module) => sum + module.credits, 0)) * 100
+    ) / 100;
+
   const y3Avg =
     Math.round(
-      (lvl7.reduce((sum, module) => sum + module.grade, 0) / lvl7.length) * 1000
-    ) / 1000;
-    
+      (lvl7.reduce((sum, module) => sum + module.grade * module.credits, 0) /
+        lvl7.reduce((sum, module) => sum + module.credits, 0)) * 100
+    ) / 100;
+
   // Determine grade band
   let grade = "";
   if (final >= 70) {
@@ -110,12 +162,13 @@ const totalCreditVal = (lvl7, lvl6) => {
     grade = "Fail";
   }
 
+  // Determine if upgrade applies
   let upgrade = false;
   const allModules = [...lvl6, ...lvl7];
 
   if (final >= 68 && final < 70) {
     const highGradeCredits =
-      allModules.filter((mod) => mod.grade >= 70).length * 15;
+      allModules.filter((mod) => mod.grade >= 70).reduce((sum, mod) => sum + mod.credits, 0);
 
     if (highGradeCredits >= 120) {
       upgrade = true;
@@ -123,7 +176,7 @@ const totalCreditVal = (lvl7, lvl6) => {
     }
   } else if (final >= 58 && final < 60) {
     const highGradeCredits =
-      allModules.filter((mod) => mod.grade >= 60).length * 15;
+      allModules.filter((mod) => mod.grade >= 60).reduce((sum, mod) => sum + mod.credits, 0);
 
     if (highGradeCredits >= 120) {
       upgrade = true;
@@ -131,7 +184,7 @@ const totalCreditVal = (lvl7, lvl6) => {
     }
   } else if (final >= 48 && final < 50) {
     const highGradeCredits =
-      allModules.filter((mod) => mod.grade >= 50).length * 15;
+      allModules.filter((mod) => mod.grade >= 50).reduce((sum, mod) => sum + mod.credits, 0);
 
     if (highGradeCredits >= 120) {
       upgrade = true;
@@ -139,7 +192,7 @@ const totalCreditVal = (lvl7, lvl6) => {
     }
   } else if (final >= 38 && final < 40) {
     const highGradeCredits =
-      allModules.filter((mod) => mod.grade >= 40).length * 15;
+      allModules.filter((mod) => mod.grade >= 40).reduce((sum, mod) => sum + mod.credits, 0);
 
     if (highGradeCredits >= 120) {
       upgrade = true;
@@ -149,26 +202,13 @@ const totalCreditVal = (lvl7, lvl6) => {
 
   const results = {
     final: final + "%",
-    y2Avg: y2Avg,
-    y3Avg: y3Avg,
+    y2Avg: y2Avg + "%",
+    y3Avg: y3Avg + "%",
     grade: grade,
     upgrade: upgrade ? "Yes" : "No",
   };
 
   return results;
-};
-
-const creditValue = (grade) => {
-  return grade * 15; 
-};
-
-const bandCalculate = (band, multiplier, credits) => {
-  let total = 0;
-  band.forEach((mod) => {
-    total += mod;
-  });
-  total = ((total / credits) * multiplier) / 100;
-  return total;
 };
 
 export default calculateUndergraduate;

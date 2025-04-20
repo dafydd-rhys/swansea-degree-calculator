@@ -38,17 +38,41 @@ body.dark {
     right: 20px;
 }
 
-.theme-toggle {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-}
-
-/* Title and info box */
 .title-box {
-    margin-bottom: 10px;
+    font-size: medium;
 }
 
+.subtitle {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-top: -5px;
+    margin-bottom: 10px;
+    color: var(--text-color); /* or a specific color */
+    text-align: center;
+  }
+  
+
+.theme-toggle-btn {
+    border: none;
+    padding: 10px 12px;
+    font-size: 18px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Light mode button styling */
+  .light-btn {
+    background-color: #f9f9f9;
+    color: #333;
+  }
+  
+  /* Dark mode button styling */
+  .dark-btn {
+    background-color: #121212;
+    color: #f0f0f0;
+  }
+  
 .info-box {
     width: 100%;
     max-width: 1100px;
@@ -57,9 +81,24 @@ body.dark {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow for light mode */
-    margin-bottom: 30px;
+    margin-bottom: 0px;
     font-size: large;
 }
+
+.toggle-info-btn {
+    background-color: #007acc;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .info-box-wrapper {
+    margin-bottom: 20px;
+  }
 
 .calculator-container.dark .info-box {
     background: #1e1e1e; /* Dark background for info box in dark mode */
@@ -168,7 +207,7 @@ body.dark {
     border-radius: 10px;
     padding: 15px;
     width: calc(20%);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Light shadow */
     position: relative;
     display: flex;
     flex-direction: column;
@@ -180,9 +219,12 @@ body.dark {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* Darker shadow for dark mode */
 }
 
+
+
 .module-title {
     align-self: flex-start;
     margin-top: 0;
+    font-size: medium;
 }
 
 .module-fields {
@@ -206,8 +248,12 @@ body.dark {
     color: #333; /* Dark text for label in light mode */
 }
 
+.calculator-container.dark .form-group label {
+    color: #fff; /* Light text for input in dark mode */
+}
+
 .form-group input {
-    width: 90px;
+    width: 90%;
     padding: 8px 6px;
     font-size: 1.2em;
     border-radius: 5px;
@@ -261,7 +307,7 @@ body.dark {
 
 .clear-btn {
     margin-top: 15px;
-    margin-right: 20px;
+    margin-right: 15px;
     padding: 10px 20px;
     background: #e74c3c;
     color: white;
@@ -385,3 +431,115 @@ a {
   font-weight: bold;
   transition: color 0.3s ease;
 }
+
+@media (max-width: 768px) {
+    .dropdown-container {
+      align-items: flex-start;
+    }
+  
+    .dropdown-container select {
+      width: 100%;
+    }
+  
+    .module-grid {
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* center module cards */
+      gap: 10px;
+    }
+  
+    .module-card {
+      width: 90%; /* make cards smaller */
+      max-width: 300px;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+  
+    .module-fields {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      gap: 20px;
+    }
+  
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+  
+    .form-group input {
+      width: 90%;
+      padding: 6px;
+    }
+  
+    .module-buttons {
+        display: flex;
+        margin-top: 10px;
+      }
+      
+      .add-btn,
+      .clear-btn {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px 0;
+        margin: 0px;
+      }
+      
+      .add-btn {
+        margin-left: 15px;
+      }
+      
+      .clear-btn {
+        margin-right: 15px;
+      }
+      
+  
+    .submit-container {
+      display: flex;
+      justify-content: center;
+    }
+  
+    .submit-btn {
+      width: 90%;
+    }
+  
+    .info-box,
+    .year-sections-wrapper,
+    .results-section {
+      padding: 15px;
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+    }
+  
+    .info-box {
+      font-size: small;
+      margin-bottom: 0px;
+    }
+  
+    .year-header,
+    .results-header {
+      font-size: 1rem;
+      padding: 10px 15px;
+      margin-bottom: 10px;
+    }
+  
+    .results-body p {
+      margin-left: 0;
+      font-size: 0.95rem;
+    }
+    
+    .year-section {
+        margin-bottom: 10px;
+    }
+
+    .title-box h1 {
+        margin-top: 45px;
+        margin-bottom: 10px;
+    }
+
+  }
+  

@@ -12,7 +12,7 @@
     "react-scripts": "^5.0.1",
     "web-vitals": "^2.1.4"
   },
-  "homepage": "https://dafydd-rhys.github.io/swansea-degree-calculator",
+  "homepage": "https://swanseauni-gradecalculator.co.uk/",
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
