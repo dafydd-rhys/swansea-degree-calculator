@@ -1,15 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./styles.css";
-import { calculateUndergraduate } from "./calculations";
+import {
+  calculateUndergraduate,
+  simulateMinimumAverageNeeded,
+} from "./calculations";
 
 export default function Calculator() {
   const [grades, setGrades] = useState({
-    y2: [
-      { credits: 15, grade: 30 }
-    ],
-    y3: [
-      { credits: 15, grade: 30 }
-    ],
+    y2: [{ credits: 15, grade: 30 }],
+    y3: [{ credits: 15, grade: 30 }],
   });
 
   const resultsRef = useRef(null);
@@ -62,24 +61,24 @@ export default function Calculator() {
     const updatedModules = [...grades[year]];
 
     // Set defaults if input is empty string
-  if (isNaN(value) || value === null || value === "") {
-    if (field === "credits") {
-      updatedModules[index][field] = 10;
-    } else if (field === "grade") {
-      updatedModules[index][field] = 30;
+    if (isNaN(value) || value === null || value === "") {
+      if (field === "credits") {
+        updatedModules[index][field] = 10;
+      } else if (field === "grade") {
+        updatedModules[index][field] = 30;
+      }
+    } else {
+      // Otherwise apply the normal validation
+      if (field === "credits" && value < 10) {
+        updatedModules[index][field] = 10;
+      } else if (field === "grade" && value < 30) {
+        updatedModules[index][field] = 30;
+      } else if (field === "credits" && value > 120) {
+        updatedModules[index][field] = 120;
+      } else if (field === "grade" && value > 100) {
+        updatedModules[index][field] = 100;
+      }
     }
-  } else {
-    // Otherwise apply the normal validation
-    if (field === "credits" && value < 10) {
-      updatedModules[index][field] = 10;
-    } else if (field === "grade" && value < 30) {
-      updatedModules[index][field] = 30;
-    } else if (field === "credits" && value > 120) {
-      updatedModules[index][field] = 120;
-    } else if (field === "grade" && value > 100) {
-      updatedModules[index][field] = 100;
-    }
-  }
 
     setGrades((prev) => ({ ...prev, [year]: updatedModules }));
   };
@@ -137,6 +136,37 @@ export default function Calculator() {
       document.body.classList.remove("dark");
     }
   }, [darkMode]);
+
+  const handleAnalyseClick = () => {
+    setError("");
+    const analysis = simulateMinimumAverageNeeded(grades.y2, grades.y3);
+  
+    if (typeof analysis === "object") {
+      // Assuming analysis provides the required values (first class, second class, etc.)
+      const classification = Object.entries(analysis)[0];
+      const [degree, avg] = classification;
+  
+      // Update results with classification info
+      setResults({
+        ...results,
+        analysis: `${degree}: You need ${avg}%`,
+        fc: analysis.fc,  
+        scU: analysis.scU, 
+        scL: analysis.scL, 
+        tc: analysis.tc,
+      });
+
+      if (resultsRef.current) {
+        resultsRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      // Handle errors or failed analysis
+      setResults({
+        ...results,
+        analysis: analysis.message, // Display any error message from analysis
+      });
+    }
+  };
 
   return (
     <div className={`calculator-container ${darkMode ? "dark" : "light"}`}>
@@ -326,6 +356,9 @@ export default function Calculator() {
         </div>
 
         <div className="submit-container">
+          <button className="predict-btn" onClick={handleAnalyseClick}>
+            Analyse Results
+          </button>
           <button className="submit-btn" onClick={calculateGrades}>
             Submit Results
           </button>
@@ -334,30 +367,46 @@ export default function Calculator() {
 
       {/* Results Section */}
       <div className="results-section" ref={resultsRef}>
-        <div className="results-header">Results</div>
-        <div className="results-body">
-          <p>
-            Final Grade:{" "}
-            <span className="result-value">{results.final ?? "0%"}</span>
-          </p>
-          <p>
-            Year 2 Average:{" "}
-            <span className="result-value">{results.y2Avg ?? "0%"}</span>
-          </p>
-          <p>
-            Year 3 Average:{" "}
-            <span className="result-value">{results.y3Avg ?? "0%"}</span>
-          </p>
-          <p>
-            Grade Decision:{" "}
-            <span className="result-value">{results.grade || "N/A"}</span>
-          </p>
-          <p>
-            Upgrade Eligibility:{" "}
-            <span className="result-value">{results.upgrade || "N/A"}</span>
-          </p>
-        </div>
-      </div>
+  <div className="results-header">Results</div>
+  <div className="results-body">
+    {/* Dynamically display the analysis */}
+    {results.analysis ? (
+      <>
+      <p>
+        First Class Honours: <span className="result-value">{results.fc}</span>
+      </p>
+      <p>
+        Upper Second Class Honours (2:1): <span className="result-value">{results.scU}</span>
+      </p>
+      <p>
+        Lower Second Class Honours (2:2): <span className="result-value">{results.scL}</span>
+      </p>
+      <p>
+        Third Class Honours: <span className="result-value">{results.tc}</span>
+      </p>
+    </>
+    ) : (
+      <>
+        <p>
+          Final Grade: <span className="result-value">{results.final}</span>
+        </p>
+        <p>
+          Year 2 Average: <span className="result-value">{results.y2Avg}</span>
+        </p>
+        <p>
+          Year 3 Average: <span className="result-value">{results.y3Avg}</span>
+        </p>
+        <p>
+          Grade Decision: <span className="result-value">{results.grade}</span>
+        </p>
+        <p>
+          Upgrade Eligibility: <span className="result-value">{results.upgrade}</span>
+        </p>
+      </>
+    )}
+  </div>
+</div>
+
     </div>
   );
 }

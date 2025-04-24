@@ -1,3 +1,90 @@
+export const simulateMinimumAverageNeeded = (lvl6, lvl7) => {
+  const CLASSIFICATIONS = [
+    { name: "First Class Honours", target: 70 },
+    { name: "Upper Second Class Honours", target: 60 },
+    { name: "Lower Second Class Honours", target: 50 },
+    { name: "Third Class Honours", target: 40 },
+  ];
+
+  // Helper to clone modules
+  const cloneModules = (modules) => modules.map((mod) => ({ ...mod }));
+
+  // Helper to calculate weighted banded classification
+  const calculateFromModules = (lvl6, lvl7) =>
+    calculateUndergraduate(cloneModules(lvl6), cloneModules(lvl7)).final.replace("%", "");
+
+  // Get how many credits have been used per band so far
+  const usedCredits = (mods) => mods.reduce((sum, mod) => sum + mod.credits, 0);
+
+  const totalLvl6 = usedCredits(lvl6);
+  const totalLvl7 = usedCredits(lvl7);
+
+  const missingLvl6 = 120 - totalLvl6;
+  const missingLvl7 = 120 - totalLvl7;
+
+  const remainingCredits = [];
+
+  if (missingLvl6 > 0) {
+    remainingCredits.push({ level: 6, credits: missingLvl6 });
+  }
+
+  if (missingLvl7 > 0) {
+    remainingCredits.push({ level: 7, credits: missingLvl7 });
+  }
+
+  // Try values between 30-100 to simulate needed average
+  const simulateForTarget = (target) => {
+    for (let testAvg = 30; testAvg <= 100; testAvg += 0.01) {
+      const testLvl6 = [...lvl6];
+      const testLvl7 = [...lvl7];
+
+      remainingCredits.forEach((block) => {
+        const testModule = {
+          grade: testAvg,
+          credits: block.credits,
+        };
+        if (block.level === 6) testLvl6.push(testModule);
+        else testLvl7.push(testModule);
+      });
+
+      const final = parseFloat(calculateFromModules(testLvl6, testLvl7));
+
+      if (final >= target) {
+        return Math.round(testAvg * 100) / 100;
+      }
+    }
+    return null;
+  };
+
+  // Run simulation for all targets
+  const results = {};
+
+  // Add a new key for each classification
+  CLASSIFICATIONS.forEach((cls) => {
+    const minAvg = simulateForTarget(cls.target);
+    // Set the results in the desired format
+    if (cls.name === "First Class Honours") {
+      results.fc = minAvg
+        ? `You need an average of ${minAvg}% in your remaining modules.`
+        : "It is not possible to achieve First Class Honours with remaining credits.";
+    } else if (cls.name === "Upper Second Class Honours") {
+      results.scU = minAvg
+        ? `You need an average of ${minAvg}% in your remaining modules.`
+        : "It is not possible to achieve Upper Second Class Honours (2:1) with remaining credits.";
+    } else if (cls.name === "Lower Second Class Honours") {
+      results.scL = minAvg
+        ? `You need an average of ${minAvg}% in your remaining modules.`
+        : "It is not possible to achieve Lower Second Class Honours with remaining credits.";
+    } else if (cls.name === "Third Class Honours") {
+      results.tc = minAvg
+        ? `You need an average of ${minAvg}% in your remaining modules.`
+        : "It is not possible to achieve Third Class Honours with remaining credits.";
+    }
+  });
+
+  return results;
+};
+
 export const calculateUndergraduate = (y2, y3) => {
   return totalCreditVal(y3, y2);
 };

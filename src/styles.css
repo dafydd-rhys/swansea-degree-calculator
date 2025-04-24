@@ -332,6 +332,7 @@ body.dark {
     display: flex;
     justify-content: flex-end;
     align-items: flex-start;
+    gap: 10px;
 }
 
 .submit-btn {
@@ -343,6 +344,21 @@ body.dark {
     border-radius: 6px;
     font-size: 1.2rem;
     cursor: pointer;
+}
+
+.predict-btn {
+  padding: 12px 25px;
+    width: 100%;
+    background-color: #7c34db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.predict-btn:hover {
+  background-color: #6729b9;
 }
 
 .submit-btn:hover {
@@ -474,36 +490,30 @@ a {
     }
   
     .module-buttons {
-        display: flex;
-        margin-top: 10px;
-      }
-      
-      .add-btn,
-      .clear-btn {
-        flex: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 10px 0;
-        margin: 0px;
-      }
-      
-      .add-btn {
-        margin-left: 15px;
-      }
-      
-      .clear-btn {
-        margin-right: 15px;
-      }
-      
+      width: 90%;
+      margin: 10px auto 0 auto; /* 👈 center the container */
+      display: flex;
+      justify-content: flex-end; /* 👈 align buttons to the right inside the container */
+      gap: 8px;
+    }
   
+    .add-btn,
+    .clear-btn {
+      padding: 10px 12px;
+      margin: 0;
+      width: auto;
+      flex: none;
+    }
+
     .submit-container {
       display: flex;
       justify-content: center;
     }
-  
+
+    .predict-btn,
     .submit-btn {
       width: 90%;
+      font-size: medium;
     }
   
     .info-box,
@@ -534,6 +544,7 @@ a {
     
     .year-section {
         margin-bottom: 10px;
+        
     }
 
     .title-box h1 {
